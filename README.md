@@ -1,12 +1,5 @@
 # AI Engineering Company Project — Student Template
 
-[![4Geeks Academy](https://img.shields.io/badge/4Geeks-Academy-blue)](https://4geeksacademy.com)
-[![AI Engineering](https://img.shields.io/badge/track-AI%20Engineering-green)](https://4geeksacademy.com/es/programas-de-carrera/ingenieria-ia)
-
-_Base template for transversal projects in the AI Engineering Career Program — 4Geeks Academy._
-
-_Estas instrucciones tambien estan disponibles en [espanol](./README.es.md)._
-
 ---
 
 ## Purpose
@@ -69,7 +62,7 @@ Read the linked `README.md` inside each folder before you start coding there.
 | ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | [`CONTEXT.md`](./CONTEXT.md) | Single source of truth for your company (Brasaland, TrackFlow, or Nexova) | **First step:** copy your assigned company briefing here so every app, agent, and prompt uses the same domain |
 | `docker-compose.yml`         | Local dev orchestration for the whole stack                               | Keep at repo root — wires `services/`, databases, and other containers from one place                         |
-| `README.md` / `README.es.md` | This guide                                                                | Orientation — you are here                                                                                    |
+| `README.md`                  | This guide                                                                | Orientation — you are here                                                                                    |
 
 ### `uis/` — user interfaces
 
@@ -268,7 +261,7 @@ Is it a CLI tool with its own package?     → internal/
 
 ```text
 ai-engineering-company-project-monorepo/
-├── README.md / README.es.md   # This guide
+├── README.md                  # This guide
 ├── CONTEXT.md                 # ← Replace with your company briefing
 ├── docker-compose.yml         # ← Local dev orchestration (repo root)
 ├── uis/                       # Frontends (website, backoffice, dashboards)

@@ -6,5 +6,3 @@ Unlike simple scripts in `/scripts`, these are structured tools with their own d
 
 - **Main purpose**: to centralize robust utilities used internally by the engineering team.
 - **Recommendation**: document how to install and use each internal tool.
-
-> _Spanish version: [README.es.md](./README.es.md)._

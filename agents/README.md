@@ -6,5 +6,3 @@ Each subfolder under `agents/` should represent **one concrete agent** (for exam
 
 - **Main purpose**: centralize reusable agent development for the company in one monorepo.
 - **Recommendation**: maintain a catalog of agents here as they are created and link to each agent’s README.
-
-> _Spanish version: [README.es.md](./README.es.md)._

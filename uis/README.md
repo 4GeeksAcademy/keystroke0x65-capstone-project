@@ -11,5 +11,3 @@ Organize `uis/` by **different concerns** — each subfolder covers a distinct a
 
 - **Main purpose**: to centralize in a single place all frontend applications that support the company's use cases.
 - **Recommendation**: document in this file (or in sub-READMEs) the applications you add, their objective, the technology used, and how to run them.
-
-> _Estas instrucciones también están disponibles en [español](./README.es.md)._

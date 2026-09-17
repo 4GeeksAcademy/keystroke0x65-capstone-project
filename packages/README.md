@@ -6,5 +6,3 @@ Each subfolder under `packages/` should represent **one versionable package** (f
 
 - **Main purpose**: encourage reuse and consistency across all company deliverables.
 - **Recommendation**: document packages as you add them—their public API and how they are consumed from `apps/`, `agents/`, and `workflows/`.
-
-> _Spanish version: [README.es.md](./README.es.md)._
