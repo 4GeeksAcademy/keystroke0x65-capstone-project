@@ -4,16 +4,19 @@
      to operations-only writes). Keep it under 80 lines. Durable facts belong in context/ or experience/. -->
 
 ## Current focus
-Memory bank initialized for the TrackFlow capstone and connected to the root
-agent instructions.
+TrackFlow's first implementation milestone is the website in `uis/website`.
+The React/Vite frontend includes the landing page and application page.
 
 ## Open questions / blockers
-The first implementation milestone has not yet been selected.
+The application form is currently client-side only; it does not persist or send
+submissions to the planned centralized API.
 
 ## Recent changes
-- Added initial project, architecture, stack, convention, decision, and progress entries.
+- Recorded the completed website milestone in the memory bank.
+- Verified `npm run build` and `npm run lint` from `uis/website`.
+- Added website architecture, React/Vite stack, and command entries.
 - Added session-start memory-bank reading instructions to `AGENTS.md`.
 
 ## Next steps
-Choose between centralized telemetry/logging and warehouse restocking, then
-create the first implementation subfolder and README.
+Connect the application form to the centralized API, then select and implement
+the next TrackFlow domain milestone (telemetry/logging or warehouse restocking).

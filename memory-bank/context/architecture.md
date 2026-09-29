@@ -4,6 +4,7 @@
 
 ## Components
 <!-- empty: major modules/services and their responsibility -->
+- [arch-0004] root h=0 x=0 d=2026-09-24 labels=website,react,frontend :: uis/website is the first implemented UI: a Vite-served React TypeScript frontend with a TrackFlow landing page at / and an application page at /application.html.
 
 ## Data flow
 <!-- empty: how data and requests move through the system -->
@@ -16,7 +17,7 @@
 <!-- empty: rules that must stay true (e.g. "all DB access goes through lib/db") -->
 
 ## Repository organization
-- [arch-0001] root h=0 x=0 d=2026-09-17 labels=monorepo,architecture,folders src="README.md" :: The repository is a monorepo organized by responsibility: uis for interfaces, services for the centralized API, data for pipelines, agents for AI, workflows for orchestration, and infra/scripts/internal for operations.
+- [arch-0001] root h=1 x=0 d=2026-09-17 labels=monorepo,architecture,folders src="README.md" :: The repository is a monorepo organized by responsibility: uis for interfaces, services for the centralized API, data for pipelines, agents for AI, workflows for orchestration, and infra/scripts/internal for operations.
 
 ## Backend direction
 - [arch-0002] root h=0 x=0 d=2026-09-17 labels=fastapi,backend,api src="README.md" :: The documented backend direction is one centralized FastAPI company API with domain routers, adding separate workers only when background execution truly requires it.
