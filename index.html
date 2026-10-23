@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8fafc" />
+    <title>TrackFlow Utility Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typescript@5.7.3/lib/typescript.js"></script>
+    <style>
+      body { background: #f8fafc; }
+      .result-json { white-space: pre-wrap; overflow-wrap: anywhere; }
+      select, input { color-scheme: light; }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-900 antialiased">
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-5">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600">TrackFlow · sandbox</p>
+          <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Utility tester</h1>
+          <p class="mt-1 text-sm text-slate-500">Try the inventory, search, carrier, report, and validation utilities with the included sample records.</p>
+        </div>
+        <div id="status" class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800" role="status" aria-live="polite">
+          <span class="h-2 w-2 rounded-full bg-amber-500"></span> Loading utilities…
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl space-y-6 px-5 py-7">
+      <section class="grid gap-4 sm:grid-cols-3" aria-label="Sample data summary">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-medium text-slate-500">Sample products</p><p id="product-count" class="mt-2 text-3xl font-bold">—</p><p class="mt-1 text-xs text-slate-400">Inventory records</p></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-medium text-slate-500">Sample shipments</p><p id="shipment-count" class="mt-2 text-3xl font-bold">—</p><p class="mt-1 text-xs text-slate-400">Delivery records</p></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-medium text-slate-500">Available carriers</p><p id="carrier-count" class="mt-2 text-3xl font-bold">—</p><p class="mt-1 text-xs text-slate-400">Shipping partners</p></div>
+      </section>
+
+      <section class="grid gap-6 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div class="mb-5"><p class="text-xs font-bold uppercase tracking-wider text-indigo-600">01 · Collections</p><h2 class="mt-1 text-xl font-bold">Filter and sort products</h2><p class="mt-1 text-sm text-slate-500">Combine category, warehouse, and low-stock filters, then sort results by stock.</p></div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-slate-700">Category
+              <select id="category-filter" class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="">All categories</option><option>Fashion</option><option>Electronics</option><option>Cosmetics</option><option>Home</option><option>Other</option></select>
+            </label>
+            <label class="text-sm font-semibold text-slate-700">Warehouse
+              <select id="warehouse-filter" class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="">All warehouses</option><option>Los Angeles</option><option>Zaragoza</option></select>
+            </label>
+            <label class="text-sm font-semibold text-slate-700">Sort stock
+              <select id="stock-sort" class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"><option value="">No sorting</option><option value="asc">Lowest stock first</option><option value="desc">Highest stock first</option></select>
+            </label>
+            <label class="flex items-center gap-2 self-end pb-3 text-sm font-medium text-slate-700"><input id="low-stock-only" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Low stock only</label>
+          </div>
+          <button id="run-products" class="mt-5 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Run product operations</button>
+          <div id="products-result" class="mt-4" aria-live="polite"></div>
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div class="mb-5"><p class="text-xs font-bold uppercase tracking-wider text-indigo-600">02 · Search</p><h2 class="mt-1 text-xl font-bold">Find a product or shipment</h2><p class="mt-1 text-sm text-slate-500">Look up by SKU or shipment ID, or binary-search products by weight.</p></div>
+          <div class="space-y-4">
+            <form id="product-search-form" class="flex flex-col gap-2 sm:flex-row"><label class="sr-only" for="sku-query">Product SKU</label><input id="sku-query" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100" placeholder="Product SKU (e.g. SHOE-BLK-42)" /><button class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700" type="submit">Find product</button></form>
+            <form id="shipment-search-form" class="flex flex-col gap-2 sm:flex-row"><label class="sr-only" for="shipment-query">Shipment ID</label><input id="shipment-query" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100" placeholder="Shipment ID (e.g. SH-2024-8821)" /><button class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700" type="submit">Find shipment</button></form>
+            <form id="weight-search-form" class="flex flex-col gap-2 sm:flex-row"><label class="sr-only" for="weight-query">Product weight in kilograms</label><input id="weight-query" type="number" min="0.01" step="any" class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100" placeholder="Weight in kg (e.g. 0.8)" /><button class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700" type="submit">Search weight</button></form>
+          </div>
+          <div id="search-result" class="mt-4" aria-live="polite"></div>
+        </article>
+      </section>
+
+      <section class="grid gap-6 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div class="mb-5"><p class="text-xs font-bold uppercase tracking-wider text-indigo-600">03 · Reports</p><h2 class="mt-1 text-xl font-bold">Inventory and shipment reports</h2><p class="mt-1 text-sm text-slate-500">Run aggregate summaries over the provided sample records.</p></div>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <button data-report="category-counts" class="report-button rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:border-indigo-400 hover:bg-indigo-50">Products by category</button>
+            <button data-report="inventory-value" class="report-button rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:border-indigo-400 hover:bg-indigo-50">Total inventory value</button>
+            <button data-report="shipment-distance" class="report-button rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:border-indigo-400 hover:bg-indigo-50">Average shipment distance</button>
+            <button data-report="shipment-status" class="report-button rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold hover:border-indigo-400 hover:bg-indigo-50">Shipments by status</button>
+          </div>
+          <form id="top-carriers-form" class="mt-3 flex flex-wrap items-center gap-2"><label for="top-n" class="text-sm font-medium text-slate-700">Top carriers</label><input id="top-n" type="number" min="1" max="10" value="3" class="w-24 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100" /><button class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-50" type="submit">Generate report</button></form>
+          <div id="report-result" class="mt-4" aria-live="polite"></div>
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div class="mb-5"><p class="text-xs font-bold uppercase tracking-wider text-indigo-600">04 · Carriers</p><h2 class="mt-1 text-xl font-bold">Estimate a shipment</h2><p class="mt-1 text-sm text-slate-500">Compare carrier costs and scores, then select the best fit.</p></div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="text-sm font-semibold text-slate-700">Shipment<select id="calc-shipment" class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"></select></label>
+            <label class="text-sm font-semibold text-slate-700">Product<select id="calc-product" class="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"></select></label>
+          </div>
+          <button id="run-carriers" class="mt-5 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Compare carriers</button>
+          <div id="carrier-result" class="mt-4" aria-live="polite"></div>
+        </article>
+      </section>
+
+      <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div class="mb-5"><p class="text-xs font-bold uppercase tracking-wider text-indigo-600">05 · Validation</p><h2 class="mt-1 text-xl font-bold">Validate a sample record</h2><p class="mt-1 text-sm text-slate-500">Run the product, shipment, or carrier validation function.</p></div>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <label class="text-sm font-semibold text-slate-700">Record type<select id="validation-type" class="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-64"><option value="product">Product · Black Running Shoes</option><option value="shipment">Shipment · SH-2024-8821</option><option value="carrier">Carrier · UPS</option></select></label>
+          <button id="run-validation" class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Validate record</button>
+        </div>
+        <div id="validation-result" class="mt-4" aria-live="polite"></div>
+      </section>
+
+      <footer class="pb-3 text-center text-xs text-slate-400">Results are produced by the TypeScript utilities in <code>src/utils</code>; sample records are read-only.</footer>
+    </main>
+
+    <script type="application/json" id="sample-data">
+      {
+        "products": [
+          {"sku":"SHOE-BLK-42","name":"Black Running Shoes - Size 42","category":"Fashion","weightKg":0.8,"dimensions":{"lengthCm":35,"widthCm":22,"heightCm":12},"warehouse":"Los Angeles","stockQuantity":45,"minStockThreshold":20,"unitCostUSD":35.0,"isFragile":false,"status":"Active"},
+          {"sku":"LAPTOP-DELL-15","name":"Dell Laptop 15 inch","category":"Electronics","weightKg":2.3,"dimensions":{"lengthCm":40,"widthCm":28,"heightCm":3},"warehouse":"Zaragoza","stockQuantity":8,"minStockThreshold":10,"unitCostUSD":650.0,"isFragile":true,"status":"Low stock"},
+          {"sku":"PERFUME-COCO-50","name":"Coco Perfume 50ml","category":"Cosmetics","weightKg":0.3,"dimensions":{"lengthCm":12,"widthCm":8,"heightCm":15},"warehouse":"Los Angeles","stockQuantity":120,"minStockThreshold":30,"unitCostUSD":85.0,"isFragile":true,"status":"Active"}
+        ],
+        "carriers": [
+          {"id":"CAR-UPS","name":"UPS","operatesIn":["United States"],"baseRateUSD":5.0,"ratePerKgUSD":1.2,"ratePerKmUSD":0.05,"avgDeliveryDays":3,"onTimeRate":88,"maxWeightKg":30,"handlesFragile":true,"acceptsPriority":["Standard","Express"]},
+          {"id":"CAR-SEUR","name":"SEUR","operatesIn":["Spain"],"baseRateUSD":6.5,"ratePerKgUSD":1.5,"ratePerKmUSD":0.08,"avgDeliveryDays":2,"onTimeRate":92,"maxWeightKg":25,"handlesFragile":true,"acceptsPriority":["Standard","Express","Same-day"]},
+          {"id":"CAR-DHL","name":"DHL Express","operatesIn":["United States","Spain"],"baseRateUSD":12.0,"ratePerKgUSD":2.0,"ratePerKmUSD":0.1,"avgDeliveryDays":1,"onTimeRate":95,"maxWeightKg":50,"handlesFragile":true,"acceptsPriority":["Express","Same-day"]}
+        ],
+        "shipments": [
+          {"id":"SH-2024-8821","sku":"LAPTOP-DELL-15","quantity":1,"origin":"Zaragoza","destination":{"city":"Madrid","country":"Spain","postalCode":"28001","distanceKm":320},"priority":"Express","declaredValueUSD":650.0,"carrier":null,"status":"Pending","createdAt":"2024-03-15"},
+          {"id":"SH-2024-8822","sku":"SHOE-BLK-42","quantity":2,"origin":"Los Angeles","destination":{"city":"San Francisco","country":"United States","postalCode":"94105","distanceKm":615},"priority":"Standard","declaredValueUSD":70.0,"carrier":"UPS","status":"In transit","createdAt":"2024-03-16"},
+          {"id":"SH-2024-8823","sku":"PERFUME-COCO-50","quantity":1,"origin":"Zaragoza","destination":{"city":"Barcelona","country":"Spain","postalCode":"08001","distanceKm":300},"priority":"Same-day","declaredValueUSD":85.0,"carrier":"SEUR","status":"Delivered","createdAt":"2024-03-17"},
+          {"id":"SH-2024-8824","sku":"LAPTOP-DELL-15","quantity":1,"origin":"Zaragoza","destination":{"city":"Valencia","country":"Spain","postalCode":"46001","distanceKm":310},"priority":"Express","declaredValueUSD":650.0,"carrier":null,"status":"Assigned","createdAt":"2024-03-18"},
+          {"id":"SH-2024-8825","sku":"SHOE-BLK-42","quantity":1,"origin":"Los Angeles","destination":{"city":"Seattle","country":"United States","postalCode":"98101","distanceKm":1545},"priority":"Express","declaredValueUSD":35.0,"carrier":"DHL Express","status":"Assigned","createdAt":"2024-03-19"},
+          {"id":"SH-2024-8826","sku":"PERFUME-COCO-50","quantity":2,"origin":"Zaragoza","destination":{"city":"Madrid","country":"Spain","postalCode":"28013","distanceKm":320},"priority":"Standard","declaredValueUSD":170.0,"carrier":"SEUR","status":"In transit","createdAt":"2024-03-20"}
+        ]
+      }
+    </script>
+    <script type="module">
+      const $ = (selector) => document.querySelector(selector);
+      const data = JSON.parse($('#sample-data').textContent);
+      const products = data.products;
+      const carriers = data.carriers;
+      const shipments = data.shipments.map((shipment) => ({ ...shipment, createdAt: new Date(shipment.createdAt) }));
+      const panels = ['#products-result', '#search-result', '#report-result', '#carrier-result', '#validation-result'];
+      let utilities;
+
+      function setStatus(message, ready = true) {
+        const status = $('#status');
+        status.className = `inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold ${ready ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800'}`;
+        status.innerHTML = `<span class="h-2 w-2 rounded-full ${ready ? 'bg-emerald-500' : 'bg-amber-500'}"></span>${message}`;
+      }
+
+      function renderResult(selector, title, value, tone = 'slate') {
+        const colors = tone === 'error' ? 'border-rose-200 bg-rose-50 text-rose-900' : tone === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-900';
+        $(selector).innerHTML = `<div class="rounded-xl border ${colors} p-4"><div class="mb-2 flex items-center justify-between gap-3"><h3 class="text-sm font-bold">${title}</h3><span class="text-xs text-slate-500">${new Date().toLocaleTimeString()}</span></div><pre class="result-json max-h-72 overflow-auto text-xs leading-5">${escapeHtml(formatValue(value))}</pre></div>`;
+      }
+
+      function formatValue(value) {
+        if (value === undefined) return 'undefined';
+        if (typeof value === 'number') return String(value);
+        if (value === null) return 'No match found (null)';
+        return JSON.stringify(value, (key, item) => item instanceof Date ? item.toISOString().slice(0, 10) : item, 2);
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      }
+
+      function showError(selector, error) {
+        renderResult(selector, 'Operation failed', error instanceof Error ? error.message : String(error), 'error');
+      }
+
+      async function loadTypeScriptModule(entry) {
+        const cache = new Map();
+        async function compile(url) {
+          const absoluteUrl = new URL(url, location.href);
+          const key = absoluteUrl.href;
+          if (cache.has(key)) return cache.get(key);
+          const pending = (async () => {
+            const response = await fetch(absoluteUrl);
+            if (!response.ok) throw new Error(`Could not load ${absoluteUrl.pathname} (${response.status})`);
+            const source = await response.text();
+            const compiled = window.ts.transpileModule(source, { compilerOptions: { target: window.ts.ScriptTarget.ES2020, module: window.ts.ModuleKind.ESNext } }).outputText;
+            const imports = [...compiled.matchAll(/\b(from\s*)(['"])(\.\.?\/[^'"]+)\2|\b(import\s*)(['"])(\.\.?\/[^'"]+)\5/g)];
+            let rewritten = compiled;
+            for (const match of imports) {
+              const prefix = match[1] || match[4];
+              const quote = match[2] || match[5];
+              const specifier = match[3] || match[6];
+              const childUrl = new URL(specifier, absoluteUrl);
+              if (!/\.tsx?$/.test(childUrl.pathname)) childUrl.pathname += '.ts';
+              const childBlob = await compile(childUrl.href);
+              rewritten = rewritten.replace(`${prefix}${quote}${specifier}${quote}`, `${prefix}${quote}${childBlob}${quote}`);
+            }
+            return URL.createObjectURL(new Blob([rewritten], { type: 'text/javascript' }));
+          })();
+          cache.set(key, pending);
+          return pending;
+        }
+        return import(await compile(entry));
+      }
+
+      function initialize() {
+        $('#product-count').textContent = products.length;
+        $('#shipment-count').textContent = shipments.length;
+        $('#carrier-count').textContent = carriers.length;
+        $('#calc-shipment').innerHTML = shipments.map((shipment, index) => `<option value="${index}">${shipment.id} · ${shipment.destination.city}</option>`).join('');
+        $('#calc-product').innerHTML = products.map((product, index) => `<option value="${index}">${product.name}</option>`).join('');
+        renderResult('#products-result', 'Sample products', products);
+        renderResult('#search-result', 'Ready to search', 'Choose a search above.');
+        renderResult('#report-result', 'Ready to report', 'Select a report to run.');
+        renderResult('#carrier-result', 'Ready to compare', 'Choose a shipment and product.');
+        renderResult('#validation-result', 'Ready to validate', 'Select a record type and run validation.');
+      }
+
+      function guard(selector, title, operation) {
+        try { renderResult(selector, title, operation()); }
+        catch (error) { showError(selector, error); }
+      }
+
+      function bindEvents() {
+        $('#run-products').addEventListener('click', () => guard('#products-result', 'Filtered and sorted products', () => {
+          let result = [...products];
+          const category = $('#category-filter').value;
+          const warehouse = $('#warehouse-filter').value;
+          if (category) result = utilities.filterProductsByCategory(result, category);
+          if (warehouse) result = utilities.filterProductsByWarehouse(result, warehouse);
+          if ($('#low-stock-only').checked) result = utilities.filterLowStockProducts(result);
+          const order = $('#stock-sort').value;
+          if (order) result = utilities.sortProductsByStock(result, order);
+          return result;
+        }));
+
+        $('#product-search-form').addEventListener('submit', (event) => {
+          event.preventDefault();
+          guard('#search-result', 'Product lookup · findProductBySKU', () => utilities.findProductBySKU(products, $('#sku-query').value.trim()));
+        });
+        $('#shipment-search-form').addEventListener('submit', (event) => {
+          event.preventDefault();
+          guard('#search-result', 'Shipment lookup · findShipmentById', () => utilities.findShipmentById(shipments, $('#shipment-query').value.trim()));
+        });
+        $('#weight-search-form').addEventListener('submit', (event) => {
+          event.preventDefault();
+          const sorted = [...products].sort((a, b) => a.weightKg - b.weightKg);
+          guard('#search-result', 'Weight lookup · binarySearchProductByWeight', () => {
+            const targetWeight = Number($('#weight-query').value);
+            const utilityIndex = utilities.binarySearchProductByWeight(sorted, targetWeight);
+            // Keep the tester useful without changing the supplied utility: its current midpoint
+            // calculation can be fractional, which causes valid array lookups to miss.
+            const resolvedIndex = utilityIndex >= 0
+              ? utilityIndex
+              : sorted.findIndex((product) => product.weightKg === targetWeight);
+            return {
+              utilityIndex,
+              index: resolvedIndex,
+              product: resolvedIndex >= 0 ? sorted[resolvedIndex] : null,
+              note: utilityIndex < 0 && resolvedIndex >= 0
+                ? 'The utility returned -1; the tester exact-match fallback found this product. The utility implementation is unchanged.'
+                : undefined,
+              sortedWeightsKg: sorted.map((product) => product.weightKg)
+            };
+          });
+        });
+
+        document.querySelectorAll('[data-report]').forEach((button) => button.addEventListener('click', () => {
+          const reports = {
+            'category-counts': ['Products by category · countProductsByCategory', () => utilities.countProductsByCategory(products)],
+            'inventory-value': ['Inventory value · calculateTotalInventoryValue', () => ({ totalValueUSD: utilities.calculateTotalInventoryValue(products) })],
+            'shipment-distance': ['Average distance · calculateAverageShipmentDistance', () => ({ averageDistanceKm: utilities.calculateAverageShipmentDistance(shipments) })],
+            'shipment-status': ['Shipments by status · groupShipmentsByStatus', () => utilities.groupShipmentsByStatus(shipments)]
+          };
+          const [title, operation] = reports[button.dataset.report];
+          guard('#report-result', title, operation);
+        }));
+        $('#top-carriers-form').addEventListener('submit', (event) => {
+          event.preventDefault();
+          guard('#report-result', 'Most-used carriers · findTopCarriers', () => utilities.findTopCarriers(shipments, Number($('#top-n').value)));
+        });
+
+        $('#run-carriers').addEventListener('click', () => guard('#carrier-result', 'Carrier comparison', () => {
+          const shipment = shipments[Number($('#calc-shipment').value)];
+          const product = products[Number($('#calc-product').value)];
+          const comparisons = carriers.map((carrier) => ({
+            carrier: carrier.name,
+            shippingCostUSD: utilities.calculateShippingCost(shipment, product, carrier),
+            suitabilityScore: utilities.scoreCarrierForShipment(carrier, shipment, product)
+          }));
+          return { comparisons, bestCarrier: utilities.selectBestCarrier(carriers, shipment, product) };
+        }));
+
+        $('#run-validation').addEventListener('click', () => guard('#validation-result', 'Validation result', () => {
+          const type = $('#validation-type').value;
+          const validators = { product: () => utilities.validateProduct(products[0]), shipment: () => utilities.validateShipment(shipments[0]), carrier: () => utilities.validateCarrier(carriers[0]) };
+          return { recordType: type, ...validators[type]() };
+        }));
+      }
+
+      initialize();
+      try {
+        utilities = await loadTypeScriptModule('./src/utils/collections.ts');
+        const search = await loadTypeScriptModule('./src/utils/search.ts');
+        const transformations = await loadTypeScriptModule('./src/utils/transformations.ts');
+        const validations = await loadTypeScriptModule('./src/utils/validations.ts');
+        utilities = { ...utilities, ...search, ...transformations, ...validations };
+        bindEvents();
+        setStatus('Utilities ready');
+      } catch (error) {
+        setStatus('Unable to load utilities', false);
+        panels.forEach((panel) => showError(panel, error));
+        console.error(error);
+      }
+    </script>
+  </body>
+</html>
