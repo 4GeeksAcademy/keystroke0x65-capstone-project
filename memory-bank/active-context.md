@@ -12,10 +12,11 @@ The application form is currently client-side only; it does not persist or send
 submissions to the planned centralized API.
 
 ## Recent changes
-- Recorded the completed website milestone in the memory bank.
-- Verified `npm run build` and `npm run lint` from `uis/website`.
-- Added website architecture, React/Vite stack, and command entries.
-- Added session-start memory-bank reading instructions to `AGENTS.md`.
+- Validated uis/website against VALIDATEME.md and BRIEFING.md (both in uis/website).
+- Fixed nav/form-header contrast, form error focus, README npx/Codespaces docs.
+- Home intro split from three.js (runtime/intro.ts); 3D, toy scenes and footer physics lazy-load.
+- Textures converted to WebP; local Lighthouse home mobile 80-83, desktop 100.
+- Recorded arch-0005, arch-0006, stack-0007..0009, performance-0001, prog-0005.
 
 ## Next steps
 Connect the application form to the centralized API, then select and implement

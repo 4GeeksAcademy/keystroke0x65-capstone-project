@@ -1,0 +1,200 @@
+/* Request-information page: the form is a TrackFlow waybill taped to the board.
+   Printed cells with small caps labels, typed (mono) entries, tick boxes marked in red, a red stamp to send.
+   Built on the site's brand layer (styles/index.css): tokens, tape strips, stamps, buttons. */
+@layer components {
+  /* same rhythm and breakpoints as the home page: one column on phones, the 5/7 split from md (768px), max-w-6xl, px-5 gutters */
+  .application-page { position: relative; padding: calc(env(safe-area-inset-top, 0px) + 128px) 0 96px; }
+  @media (min-width: 768px) {
+    .application-page { padding-top: calc(env(safe-area-inset-top, 0px) + 144px); }
+    .intro-sticky { position: sticky; top: 128px; }
+  }
+  .intro-lede { color: rgb(var(--tf-ink)); }
+  .intro-parcel { width: clamp(140px, 16vw, 210px); margin-top: 40px; rotate: -4deg; filter: drop-shadow(0 14px 14px rgb(var(--tf-ink) / 0.22)); }
+  .intro-parcel svg { display: block; width: 100%; height: auto; overflow: visible; }
+  @media (max-width: 767px) { .intro-parcel { display: none; } }
+
+  /* ---------- the sheet ---------- */
+  .waybill {
+    position: relative; border-radius: 24px; padding: clamp(18px, 3vw, 34px);
+    container: waybill / inline-size;   /* the sheet lays itself out by its own width, not the window's */
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 34%), rgb(var(--tf-cream));
+    border: var(--outline) solid rgb(var(--tf-ink)); rotate: 0.5deg;
+    box-shadow: 0 2px 0 rgb(var(--tf-ink) / 0.12), 0 32px 52px -30px rgb(var(--tf-ink) / 0.65);
+  }
+  @media (max-width: 639px) { .waybill { rotate: 0deg; border-radius: 20px; } }
+  .waybill .wb-tape { top: -17px; width: 118px; }
+  .waybill .wb-tape-l { left: 40px; rotate: -6deg; }
+  .waybill .wb-tape-r { right: 40px; rotate: 5deg; }
+
+  /* printed header band, like the shipping labels on the parcels */
+  .wb-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; border-radius: 14px; background: rgb(var(--tf-red)); border: var(--outline) solid rgb(var(--tf-ink)); color: #fff; }
+  .wb-mark { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 20px; line-height: 1; }
+  @container waybill (max-width: 380px) { .wb-mark { font-size: 18px; } }
+  .wb-instructions { margin: 16px 2px 18px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.8125rem; font-weight: 500; color: rgb(var(--tf-ink) / 0.82); }
+
+  /* ---------- the printed grid of cells ---------- */
+  .wb-grid { display: grid; grid-template-columns: 1fr; border: 2px solid rgb(var(--tf-ink)); border-radius: 16px; overflow: hidden; background: rgb(255 255 255 / 0.62); }
+  .cell { position: relative; min-width: 0; min-inline-size: 0; margin: 0; padding: 12px 16px 14px; border: 0; border-bottom: 2px solid rgb(var(--tf-ink)); transition: background-color 160ms ease-out; }
+  .cell:last-child { border-bottom: 0; }
+  @container waybill (min-width: 480px) {
+    .wb-grid { grid-template-columns: 1fr 1fr; }
+    .cell-wide { grid-column: 1 / -1; }
+    .cell:not(.cell-wide):nth-child(odd) { border-right: 2px solid rgb(var(--tf-ink)); }
+  }
+  .cell .label { display: block; margin: 0; padding: 0; font-size: 0.72rem; letter-spacing: 0.07em; color: rgb(var(--tf-ink)); }
+  .cell .label > span { color: rgb(var(--tf-red)); }
+  fieldset.cell > legend.label { float: left; width: 100%; }
+
+  /* typed entries */
+  .waybill .field {
+    display: block; width: 100%; margin: 0; padding: 7px 0 3px; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 16px; font-weight: 500; line-height: 1.45; color: rgb(var(--tf-ink));
+  }
+  .waybill .field:focus, .waybill .field:focus-visible { outline: none; }
+  .waybill .field::placeholder { color: rgb(var(--tf-ink) / 0.55); }
+  .waybill select.field {
+    appearance: none; -webkit-appearance: none; padding-right: 28px; cursor: pointer;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%232B1D0E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6'/%3E%3C/svg%3E") no-repeat right 2px center / 15px;
+  }
+  .waybill textarea.field { min-height: 128px; resize: vertical; }
+  /* entries scale with their own cell, so the longest choice ("Select monthly volume") always fits beside the arrow */
+  .cell:not(.cell-wide) { container-type: inline-size; }
+  .cell:not(.cell-wide) .field { font-size: clamp(13px, calc((100cqi - 32px) / 12.6), 16px); }
+
+  /* focus: the cell gets a highlighter pass and an ink rule under the entry */
+  .cell:focus-within { background: rgb(var(--tf-yellow) / 0.42); }
+  .cell:not(fieldset):focus-within::after {
+    content: ""; position: absolute; left: 16px; right: 16px; bottom: 7px; height: 3px; border-radius: 3px; background: rgb(var(--tf-ink));
+    transform-origin: 0 50%; animation: wb-rule 240ms cubic-bezier(.2,.8,.3,1);
+  }
+  .cell-consent:focus-within::after, .cell-submit:focus-within::after { display: none; }
+  @keyframes wb-rule { from { transform: scaleX(0); } }
+
+  /* errors: a red bar down the cell and the message in red */
+  .cell:has(.invalid), .cell:has(> .error:not(:empty)), .cell:has(.cell-foot .error:not(:empty)) { background: rgb(var(--tf-red) / 0.06); box-shadow: inset 5px 0 0 rgb(var(--tf-red)); }
+  .waybill .error { display: flex; align-items: flex-start; gap: 7px; margin: 8px 0 0; font-size: 0.84rem; font-weight: 700; line-height: 1.35; color: rgb(var(--tf-red)); }
+  .waybill .error:empty { display: none; }
+  .waybill .error::before {
+    content: ""; flex: none; width: 15px; height: 15px; margin-top: 1px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23C8102E'/%3E%3Cpath d='M8 4v5' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.8' r='1.2' fill='%23fff'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+
+  /* the low-volume heads-up: a sticky note stuck on the cell */
+  .waybill .warning { margin: 12px 0 2px; padding: 10px 12px; border: 2px solid rgb(var(--tf-ink)); border-radius: 10px; background: rgb(var(--tf-yellow)); box-shadow: 3px 3px 0 rgb(var(--tf-ink)); rotate: -0.8deg; font-size: 0.875rem; font-weight: 600; line-height: 1.4; }
+
+  /* ---------- tick boxes and options ---------- */
+  .choices { clear: both; display: flex; flex-wrap: wrap; gap: 10px; padding-top: 12px; }
+  .choice {
+    position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 9px 18px 9px 12px;
+    border: 2px solid rgb(var(--tf-ink)); border-radius: 999px; background: #fff; font-weight: 700; line-height: 1.2; cursor: pointer; user-select: none;
+    transition: background-color 150ms ease-out, box-shadow 150ms ease-out, translate 150ms ease-out;
+  }
+  .choice:hover { translate: 0 -1px; }
+  .choice:has(input:checked) { background: rgb(var(--tf-yellow)); box-shadow: 3px 3px 0 rgb(var(--tf-ink)); }
+  .cell:has(> .error:not(:empty)) .choice { border-color: rgb(var(--tf-red)); }
+  .choice input, .consent input { position: absolute; left: 12px; top: 50%; width: 22px; height: 22px; margin: -11px 0 0; opacity: 0; cursor: pointer; }
+  .consent input { top: 2px; left: 0; margin: 0; }
+  .tick { flex: none; pointer-events: none; display: grid; place-items: center; width: 22px; height: 22px; border: 2px solid rgb(var(--tf-ink)); border-radius: 6px; background: #fff; }
+  .tick.dot { border-radius: 50%; }
+  .tick svg { width: 22px; height: 22px; overflow: visible; }
+  .tick path.mark { fill: none; stroke: rgb(var(--tf-red)); stroke-width: 3.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 220ms ease-out; }
+  .tick path.mark { opacity: 0; }   /* round caps would leave a dot at the start of an undrawn tick */
+  input:checked + .tick path.mark { stroke-dashoffset: 0; opacity: 1; }
+  .tick circle.mark { fill: rgb(var(--tf-red)); transform: scale(0); transform-box: fill-box; transform-origin: center; transition: transform 200ms cubic-bezier(.3,1.7,.5,1); }
+  input:checked + .tick circle.mark { transform: scale(1); }
+  input:focus-visible + .tick { outline: 3px solid rgb(var(--tf-ink)); outline-offset: 3px; }
+  .consent { position: relative; display: flex; align-items: flex-start; gap: 12px; padding-top: 2px; font-size: 0.95rem; line-height: 1.5; cursor: pointer; }
+  .consent .tick { margin-top: 1px; }
+  .cell-consent:has(.error:not(:empty)) .tick { border-color: rgb(var(--tf-red)); }
+
+  /* counter + submit */
+  .cell-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .waybill .counter { margin: 8px 0 0 auto; flex: none; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.75rem; font-weight: 500; color: rgb(var(--tf-ink) / 0.75); }
+  .waybill .counter.text-red-700 { color: rgb(var(--tf-red)); font-weight: 600; }
+  .cell-submit { display: flex; justify-content: flex-end; padding: 18px 16px; background: rgb(var(--tf-cream) / 0.6); }
+  .cell-submit .btn-red { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 14px 28px; font-size: 1rem; }
+  @container waybill (max-width: 519px) { .cell-submit .btn-red { width: 100%; } }
+
+  /* ---------- the "please review" banner ---------- */
+  .waybill .form-errors {
+    display: flex; align-items: center; gap: 10px; margin: 0 0 18px; padding: 12px 16px; border: var(--outline) solid rgb(var(--tf-ink)); border-radius: 14px;
+    background: rgb(var(--tf-red)); color: #fff; font-weight: 700; line-height: 1.35; box-shadow: 4px 4px 0 rgb(var(--tf-ink)); rotate: -0.6deg;
+  }
+  .waybill .form-errors::before {
+    content: ""; flex: none; width: 22px; height: 22px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23fff'/%3E%3Cpath d='M8 4v5' stroke='%23C8102E' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.8' r='1.2' fill='%23C8102E'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+  .waybill .form-errors:focus-visible, .success-message:focus-visible { outline: 3px solid rgb(var(--tf-ink)); outline-offset: 4px; border-radius: 14px; }
+
+  /* ---------- delivered ---------- */
+  .success-message { padding: 10px 4px 6px; font-size: 1.05rem; }
+  .success-check { display: block; width: 64px; height: 64px; margin-bottom: 18px; }
+  .success-check svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .success-check .hc-disc { fill: rgb(var(--glass-red)); stroke: rgb(var(--tf-ink)); stroke-width: 2.5; }
+  .success-check .hc-tick { fill: none; stroke: #fff; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .success-message h2 { margin: 0; font-size: clamp(2.3rem, 4.6vw, 3.6rem); }
+
+  .privacy-note { margin: 24px 0 0; text-align: center; font-size: 0.8125rem; color: rgb(var(--tf-ink) / 0.82); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cell:focus-within::after { animation: none; }
+    .choice, .tick path.mark, .tick circle.mark { transition: none; }
+  }
+}
+
+/* ---------- barcode by the button + a quick scan when it's pressed ----------
+   success: the line locks on the bars and beeps (READ); problems: it can't lock on and gives up (NO READ) */
+@layer components {
+  .cell-submit { justify-content: space-between; align-items: center; gap: 18px 24px; flex-wrap: wrap; }
+  .scan-tag { position: relative; display: flex; align-items: center; }
+  .scan-code { position: relative; display: grid; justify-items: center; gap: 4px; padding: 8px 10px 6px; border: 2px solid rgb(var(--tf-ink)); border-radius: 10px; background: #fff; rotate: -1.5deg; }
+  .scan-code .wb-barcode { display: block; }
+  .scan-code .wb-barcode rect { fill: rgb(var(--tf-ink)); }
+  .scan-num { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: rgb(var(--tf-ink)); }
+
+  /* the laser line that crosses the bars */
+  .scan-line {
+    --sy: 0.5; position: absolute; left: 4px; right: 4px; top: calc(8px + var(--sy) * 44px); height: 3px; margin-top: -1.5px; border-radius: 2px;
+    background: #FF1F2F; box-shadow: 0 0 6px 1px rgb(255 31 47 / 0.9), 0 0 16px 4px rgb(255 31 47 / 0.35); opacity: 0; pointer-events: none;
+  }
+  /* READ / NO READ, stamped over the code */
+  .scan-verdict {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%; padding: 3px 9px; border: 2px solid currentColor; border-radius: 6px;
+    font: 800 13px/1 'Archivo Variable', Archivo, 'Arial Narrow', sans-serif; font-stretch: 75%; letter-spacing: 0.08em; white-space: nowrap;
+    background: rgb(255 255 255 / 0.92); opacity: 0; pointer-events: none;
+  }
+  .scan-tag.ok .scan-verdict { color: rgb(var(--tf-ink)); background: rgb(var(--tf-yellow)); }
+  .scan-tag.ok .scan-verdict::before { content: "✓ READ"; }
+  .scan-tag.bad .scan-verdict { color: rgb(var(--tf-red)); }
+  .scan-tag.bad .scan-verdict::before { content: "✕ NO READ"; }
+  .scan-tag.ok .scan-code { box-shadow: 0 0 0 4px rgb(var(--tf-yellow)); }
+  .scan-tag.bad .scan-code { border-color: rgb(var(--tf-red)); }
+
+  /* the scanner gun: sits just right of the code, nose pointing at it, light fanning out onto the bars */
+  .scan-gun { position: absolute; left: calc(100% + 6px); top: 50%; width: 74px; margin-top: -29px; opacity: 0; pointer-events: none; transform-origin: 20% 40%; filter: drop-shadow(0 8px 8px rgb(var(--tf-ink) / 0.28)); }
+  .scan-gun svg { position: relative; display: block; width: 100%; height: auto; overflow: visible; }
+  .scan-fan {
+    position: absolute; right: 92%; top: -9px; width: 30px; height: 64px; opacity: 0;
+    background: linear-gradient(270deg, rgb(255 31 47 / 0.55), rgb(255 31 47 / 0.08));
+    clip-path: polygon(100% 44%, 100% 56%, 0 100%, 0 0);
+  }
+  .scan-tag.ok .scan-led { fill: #FFFF46; }
+  .scan-tag.bad .scan-led { fill: #2B1D0E; }
+
+  @container waybill (max-width: 519px) {
+    .cell-submit { flex-direction: column; align-items: stretch; }
+    .scan-tag { align-self: flex-start; }
+  }
+  /* very narrow sheets (small phones): slightly smaller entries, a shorter label so the scanner still fits beside it */
+  @container waybill (max-width: 340px) {
+    .cell { padding-left: 14px; padding-right: 14px; }
+    .scan-code .wb-barcode { width: 128px; height: 38px; }
+    .scan-line { top: calc(8px + var(--sy) * 38px); }
+    .scan-gun { width: 62px; margin-top: -24px; }
+  }
+
+  /* while scanning, the form's verdict waits: messages stay hidden until the scan finishes */
+  .waybill.is-scanning .form-errors, .waybill.is-scanning .error { display: none; }
+  .waybill.is-scanning .cell { box-shadow: none; }
+  .waybill.is-scanning .cell:not(.cell-submit) { background: transparent; }
+}

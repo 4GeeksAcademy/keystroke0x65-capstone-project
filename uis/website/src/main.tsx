@@ -1,10 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/caveat';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/600.css';
+import './styles/index.css';
+import App from './App';
 
-createRoot(document.getElementById('root')!).render(
+const container = document.getElementById('root')!;
+const app = (
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);
+
+// Production builds ship the page pre-rendered (see scripts/prerender.mjs): hydrate it. The dev server starts empty.
+if (container.hasChildNodes()) hydrateRoot(container, app);
+else createRoot(container).render(app);
