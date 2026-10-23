@@ -89,8 +89,11 @@
       formErrors.textContent = 'Please review the highlighted fields before submitting.';
       formErrors.classList.remove('hidden');
       formErrors.focus();
-      const firstInvalid = form.querySelector('.invalid, input[name="services"]:not(:checked), input[name="current3pl"]:not(:checked)');
-      firstInvalid?.focus();
+      // focus the first field that is showing an error (checkbox/radio groups have no .invalid class, so check their message)
+      const firstBadCell = [...form.querySelectorAll('.cell')].find(
+        (cell) => cell.querySelector('.invalid') || [...cell.querySelectorAll('.error')].some((e) => e.textContent),
+      );
+      firstBadCell?.querySelector('input, select, textarea')?.focus();
       return;
     }
     document.querySelector('#form-fields').classList.add('hidden');

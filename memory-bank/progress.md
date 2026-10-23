@@ -14,6 +14,7 @@
 ## Done
 <!-- empty: completed milestones (keep the latest 15; consolidate archives older ones) -->
 - [prog-0001] root h=1 x=0 d=2026-09-17 labels=status,trackflow src="git log --oneline -10" :: The project selected TrackFlow, populated CONTEXT.md, and completed the initial website milestone with landing and application pages.
+- [prog-0005] root h=0 x=0 d=2026-10-23 labels=website,lighthouse,validation :: Website validated against uis/website/VALIDATEME.md and BRIEFING.md: contrast and form-focus fixes, README npx/Codespaces docs; local Lighthouse home 80-83 mobile / 100 desktop, application 94 / 100, screenshots saved in uis/website.
 
 ## Known issues
 <!-- empty: bugs, tech debt, limitations still open -->

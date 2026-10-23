@@ -8,12 +8,13 @@ or run `memory.py find <keywords>` to pull just the relevant root → delta chai
 | File | Entries (root/delta/trap) | Sections | Labels | Updated |
 |---|---|---|---|---|
 | context/project-brief.md | 4 (4/0/0) | Purpose, Users, Scope, Non-goals, Constraints | trackflow, logistics, purpose, users, operations | 2026-09-17 |
-| context/architecture.md | 4 (4/0/0) | Components, Data flow, Integrations, Invariants, Repository organization, Backend direction | website, react, frontend, data, pipelines | 2026-09-24 |
-| context/tech-stack.md | 5 (5/0/0) | Runtime and frameworks, Services and infrastructure, Dev environment, Commands, Repository baseline, Current implementation status | typescript, react, vite, memory-bank, commands | 2026-09-24 |
+| context/architecture.md | 6 (6/0/0) | Components, Data flow, Integrations, Invariants, Repository organization, Backend direction | website, intro, react, frontend, performance | 2026-10-23 |
+| context/tech-stack.md | 5 (5/0/0) | Runtime and frameworks, Services and infrastructure, Dev environment, Commands, Repository baseline, Current implementation status | typescript, react, vite, memory-bank, commands | 2026-10-23 |
 | context/conventions.md | 2 (2/0/0) | Code style, Patterns, Testing, Workflow, Documentation, Placement | conventions, documentation, folders, structure, organization | 2026-09-17 |
 | context/decisions.md | 2 (2/0/0) | Decisions, Chosen company, Initial agent direction | decision, trackflow, capstone, agent, carrier | 2026-09-17 |
-| progress.md | 4 (4/0/0) | Now, Next, Done, Known issues | status, next, website, frontend, telemetry | 2026-09-24 |
+| progress.md | 5 (5/0/0) | Now, Next, Done, Known issues | status, website, next, frontend, telemetry | 2026-10-23 |
+| experience/performance.md | 1 (0/0/1) | Lessons, Traps | lighthouse, lcp, mobile, animation | 2026-10-23 |
 
 Also: `active-context.md` (current focus, freeform), `history/archive.md` (superseded/deleted, not loaded by default), `ops-log.jsonl` (audit trail).
 
-Batches applied: 2. Bank created: 2026-09-17.
+Batches applied: 3. Bank created: 2026-09-17.
