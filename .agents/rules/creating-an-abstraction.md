@@ -1,3 +1,10 @@
+---
+description: Use when tempted to add a helper, base class, or generic layer.
+scope: agent-requested
+alwaysApply: false
+globs: []
+---
+
 # Creating an abstraction
 
 ## Rule

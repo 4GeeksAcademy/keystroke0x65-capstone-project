@@ -1,3 +1,14 @@
+---
+description: Validate untrusted input where it enters the system (forms, requests, webhooks).
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "uis/**/src/**"
+  - "services/**"
+  - "agents/**"
+  - "mcps/**"
+---
+
 # Handling external input
 
 ## Rule

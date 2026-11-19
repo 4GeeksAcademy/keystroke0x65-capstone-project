@@ -1,3 +1,10 @@
+---
+description: Delete dead code only after confirming it is dead.
+scope: always
+alwaysApply: true
+globs: []
+---
+
 # Removing code
 
 ## Rule

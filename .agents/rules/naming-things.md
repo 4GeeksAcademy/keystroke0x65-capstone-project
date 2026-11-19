@@ -1,3 +1,16 @@
+---
+description: Names describe intent in full words.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.py"
+---
+
 # Naming things
 
 ## Rule

@@ -12,6 +12,62 @@ A project memory the agent maintains for itself across sessions. It holds two ki
 
 The design combines four research results (details in `references/research-basis.md`). ReasoningBank decides *what* to store: generalizable lessons from successes and failures, not logs. DeltaMem decides *how it is structured*: a general root plus small condition-specific deltas, so variations don't duplicate the base. ACE decides *how it is written*: small operations merged by a script, with helpful/harmful counters, never whole-file rewrites. MemoryAgentBench adds *forgetting*: contradicted and harmful memories are superseded or pruned.
 
+## Objective
+
+Keep `memory-bank/` an accurate, validated, secret-free record of what is true about the project and what was learned working on it, so every session starts from current facts instead of from scratch.
+
+The four modes (init, load, record, maintain) are steps toward that one goal; pick one per run.
+
+## Inputs
+
+| Input | Required | Description | Example |
+|---|---|---|---|
+| `mode` | yes | `init`, `load`, `record`, or `maintain`, chosen from the **Modes** table below. | `record` |
+| `keywords` | yes for `load` and `record` | Task words passed to `memory.py find` to pull the relevant root → delta chains. | `backoffice layout routing` |
+| `evidence` | yes for `record` | What actually happened: test/build output, errors, user corrections, files changed. Memory records evidence, not plans. | "`npm run typecheck` passed after moving utilities to `uis/backoffice/src`" |
+| `used_ids` | no | Memory IDs that influenced the work, each tagged helpful or harmful. | `arch-0004:helpful` |
+| `ops_file` | yes for `record`/`maintain` | Operations batch JSON (schema: `scripts/schemas/ops.schema.json`), written to a temp/scratch path, never committed. | `/tmp/.../ops.json` |
+| `--bank PATH` | no (default: `./memory-bank`) | Bank location if not at the project root. | `--bank memory-bank` |
+
+## Expected output
+
+- Entry files (`context/*.md`, `progress.md`, `experience/*.md`) changed only through `memory.py apply`.
+- `index.md` regenerated, and one new line in `ops-log.jsonl` per applied batch.
+- `active-context.md` rewritten (focus, blockers, recent changes, next steps).
+- A one- or two-line report naming the recorded IDs, or saying nothing durable was learned.
+- `load` mode writes nothing. Its output is the list of entries read and how they apply to the task.
+
+## In this repository (TrackFlow monorepo)
+
+- `AGENTS.md` requires reading `memory-bank/index.md` and `memory-bank/active-context.md` at session start. Load anything else selectively.
+- `memory-bank/` is a protected path. Write to it only when recording an approved project update, and always through this skill.
+- Run scripts from the repo root as `python3 .agents/skills/memory-bank/scripts/memory.py <command>`.
+- The milestone brief names its required memory files differently from this bank. They map as follows:
+
+  | Brief name | File in this bank |
+  |---|---|
+  | `projectbrief.md` (business, objectives, problem) | `context/project-brief.md` |
+  | `techContext.md` (stack, decisions, constraints) | `context/tech-stack.md` + `context/architecture.md` + `context/decisions.md` |
+  | `progress.md` (state, next steps) | `progress.md` + `active-context.md` |
+
+- Record app placement facts (`uis/website`, `uis/backoffice`, `services/<name>`) in `context/architecture.md`. See `.agents/rules/placing-product-code.md`.
+
+## Acceptance criteria
+
+The run passes only if every item that applies to its mode holds. Commands run from the repo root.
+
+1. **Valid bank.** `python3 .agents/skills/memory-bank/scripts/memory.py validate` exits `0` and prints `ok: memory bank is valid`. This also catches hand edits to entry files, orphaned deltas, budget overruns, and secret patterns.
+2. **Dry run first** (record/maintain). `memory.py apply <ops_file> --dry-run` ran and passed before the real `apply`.
+3. **Logged.** After record/maintain, `tail -1 memory-bank/ops-log.jsonl` shows this run's batch, and its `note` describes the change.
+4. **Searched before writing** (record). `memory.py find <keywords>` ran before the batch was written. No new entry restates an existing one: `apply` rejects exact duplicates, and the agent checked the `find` output for near-duplicates.
+5. **Changed facts superseded.** When a fact changed, the old entry was SUPERSEDEd (it now appears in `history/archive.md`), not left beside a contradicting new one.
+6. **Active context in budget.** `wc -l < memory-bank/active-context.md` prints a number below `80`, and the file reflects this session's focus and next steps.
+7. **No secrets.** No key, token, password, or connection string in any entry. Env vars appear by name only (criterion 1's secret scan enforces the patterns it knows).
+8. **Load mode read selectively.** Only `index.md`, `active-context.md`, and the files that `find` or the task pointed to were read, not the whole bank.
+9. **Reported.** The final message lists the recorded IDs, or states that nothing durable was learned.
+
+Self-test for the skill's scripts: `cd .agents/skills/memory-bank && python3 -m unittest evals/test_memory.py` reports `OK`. Behavioral scenarios with their own expectations are in `evals/evals.json`.
+
 ## Rules that keep the memory healthy
 
 1. **Never hand-edit entry files** (`context/*.md`, `progress.md`, `experience/*.md`, `index.md`). Write an operations batch and run `memory.py apply`. Direct rewrites are how memories silently lose detail (ACE calls this *context collapse*); the script also assigns IDs, blocks duplicates and secrets, snapshots for rollback, and logs every change.

@@ -1,3 +1,16 @@
+---
+description: Comments explain why, not what.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.py"
+---
+
 # Writing comments
 
 ## Rule

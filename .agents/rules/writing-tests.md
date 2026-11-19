@@ -1,3 +1,14 @@
+---
+description: Test behavior, not implementation.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.test.*"
+  - "**/*.spec.*"
+  - "**/tests/**"
+  - "**/evals/**"
+---
+
 # Writing tests
 
 ## Rule

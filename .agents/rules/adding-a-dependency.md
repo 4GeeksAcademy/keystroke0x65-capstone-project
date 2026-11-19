@@ -1,3 +1,13 @@
+---
+description: Every new package needs a reason.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/package.json"
+  - "**/requirements*.txt"
+  - "**/pyproject.toml"
+---
+
 # Adding a dependency
 
 ## Rule

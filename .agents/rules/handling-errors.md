@@ -1,3 +1,16 @@
+---
+description: Recover meaningfully or fail loudly with context.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.py"
+---
+
 # Handling errors
 
 ## Rule

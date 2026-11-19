@@ -7,6 +7,53 @@ description: Create, update, and maintain git repositories safely. Use this skil
 
 Handles the full lifecycle of a git repository: **detect → create (if missing) → update → maintain**. Helper scripts live in `scripts/` (Python 3, standard library only) and print JSON so results are easy to reason about.
 
+## Objective
+
+Every git operation the agent performs leaves the repository in a safe, recoverable state: nothing secret committed, no work lost, and each change recorded as one Conventional Commit on the right branch.
+
+Create, Update, and Maintain below are three paths to that one goal, chosen by what `detect_repo.py` reports.
+
+## Inputs
+
+| Input | Required | Description | Example |
+|---|---|---|---|
+| `task` | yes | The git outcome the user wants. | "commit the rules change", "start a branch for the backoffice", "push" |
+| `path` | no (default: cwd) | Folder to operate on; passed to `detect_repo.py`. | `.` |
+| `change_intent` | yes, for commits | What changed and *why*, in one or two sentences. Becomes the commit summary and body. | "Rules lacked a declared scope, so agents couldn't tell when to load them." |
+| `files` | no (default: all changes, after review) | Paths that belong to this one logical change. Anything else stays unstaged. | `.agents/rules/` |
+| `branch_name` | yes, for new branches | Must follow the repo convention (see below). | `feature/backoffice-shell` |
+| `push` | no (default: don't push) | Push or create a remote only when the user asks. | "and push it" |
+
+## Expected output
+
+A git state that meets the acceptance criteria below, plus the short report described in **Reporting back**: what ran, the branch, the commit (short hash + subject), and anything the user must act on.
+
+## In this repository (keystroke0x65 / TrackFlow monorepo)
+
+These override the generic guidance further down:
+
+- The repo already exists, so `detect_repo.py` should report `state: repo` from the root. **Never** run Create here. If you see `nested` from a subfolder, work in the parent repo.
+- **No commit without approval.** Before `git commit`, run the five-step pre-commit workflow in `AGENTS.md`. Present the readiness report and wait for the developer's explicit "yes". The auto-commit in Create does not apply here.
+- **Branch names:** `feature/<kebab-topic>` (e.g. `feature/agent-memory-bank`, `feature/domain-models`). UI integration branches may use `uis/<app>`. PRs target `main`.
+- **Protected paths** (listed in `AGENTS.md`: `AGENTS.md`, `CONTEXT.md`, `README.md`, `.agents/`, `memory-bank/`, `packages/shared/`, root config/lockfiles/`.github/`) may appear in a diff only if the developer confirmed that specific change.
+- **Scopes for commit messages:** use the area touched: `website`, `backoffice`, `services`, `agents`, `rules`, `skills`, `memory-bank`, `repo`.
+
+## Acceptance criteria
+
+The run passes only if every item holds. Commands run from the repo root.
+
+1. **Detected first.** `python3 .agents/skills/git-skill/scripts/detect_repo.py .` ran before any other git command, and the agent followed the table row for the `state` it returned.
+2. **No secrets staged.** `python3 .agents/skills/git-skill/scripts/check_staged.py .` exits `0` right before `git commit`. Exit code `1` means findings; unstage and report them.
+3. **Conventional subject line.** This prints `ok`:
+   ```bash
+   s=$(git log -1 --format=%s); echo "$s" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9./-]+\))?!?: [a-z].*[^.]$' && [ ${#s} -le 72 ] && echo ok
+   ```
+4. **One logical change.** Every path in `git show --stat --format= HEAD` belongs to `change_intent`. Unrelated edits stay unstaged and are reported.
+5. **Approved.** In this repo, the developer's explicit approval of the `AGENTS.md` step-5 report appears in the conversation before the commit.
+6. **Correct branch.** `git branch --show-current` matches `^(feature|uis)/[a-z0-9-]+$` (or `main` only for an approved merge), and the agent never commits directly to `main`.
+7. **No destructive shortcuts.** No `push --force` was run (only `--force-with-lease`, on the agent's own branch). No `reset --hard`, `clean -fd`, `branch -D`, or history rewrite of pushed commits was run without the user's explicit approval.
+8. **Reported.** The final message gives the branch, the short hash and subject, and any action items (missing identity, flagged files, no upstream).
+
 ## Step 0: Always detect first
 
 Before any git work, run:
@@ -64,15 +111,16 @@ Format: `type(scope): summary` in imperative mood, lowercase, no trailing period
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`. Append `!` for breaking changes (`feat(api)!: drop v1 endpoints`).
 
 Examples:
-- Added Clerk sign-in page → `feat(auth): add sign-in page with Clerk`
-- Fixed extension crashing on empty share URL → `fix(extension): handle empty share url`
+- Added the backoffice layout shell → `feat(backoffice): add internal layout with sidebar nav`
+- Fixed the lead form losing focus on error → `fix(website): focus first invalid application field`
+- Declared scopes on agent rules → `docs(rules): declare scope frontmatter on every rule`
 - Updated memory-bank files → `docs(memory-bank): update active context`
 
 One logical change per commit. If the working tree mixes unrelated changes, split them into separate commits rather than writing a vague "update stuff" message.
 
 ### Branches
-- Naming: `type/short-kebab-description` (e.g. `feat/artifact-marketplace`, `fix/clerk-dev-redirect`).
-- Create from an up-to-date base: `git switch main && git pull --ff-only && git switch -c feat/x`.
+- Naming: follow the repo's convention. In this repo that's `feature/<kebab-topic>`; elsewhere default to `type/short-kebab-description` (e.g. `feat/artifact-marketplace`).
+- Create from an up-to-date base: `git switch main && git pull --ff-only && git switch -c feature/x`.
 - Solo projects may commit directly to `main` for small changes. Use a branch for anything experimental or multi-session.
 
 ### Pushing
