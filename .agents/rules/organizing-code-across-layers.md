@@ -1,3 +1,13 @@
+---
+description: Keep UI, business logic, and data access separate.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "uis/**"
+  - "services/**"
+  - "agents/**"
+---
+
 # Organizing code across layers
 
 ## Rule

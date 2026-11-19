@@ -4,20 +4,24 @@
      to operations-only writes). Keep it under 80 lines. Durable facts belong in context/ or experience/. -->
 
 ## Current focus
-TrackFlow's first implementation milestone is the website in `uis/website`.
-The React/Vite frontend includes the landing page and application page.
+Addressing reviewer feedback on the agent-infrastructure milestone (branch
+`feature/agent-memory-bank`). Rule scopes and skill acceptance criteria are done;
+the remaining gap is the Milestone 2 backoffice.
 
 ## Open questions / blockers
-The application form is currently client-side only; it does not persist or send
-submissions to the planned centralized API.
+- `uis/backoffice` holds only `.gitkeep`; the Milestone 2 utility tester still runs
+  from root `index.html` + `src/` (prog-0008). Moving it needs approval because the
+  root `package.json` is protected.
+- The application form is client-side only; no submission reaches an API yet.
 
 ## Recent changes
-- Validated uis/website against VALIDATEME.md and BRIEFING.md (both in uis/website).
-- Fixed nav/form-header contrast, form error focus, README npx/Codespaces docs.
-- Home intro split from three.js (runtime/intro.ts); 3D, toy scenes and footer physics lazy-load.
-- Textures converted to WebP; local Lighthouse home mobile 80-83, desktop 100.
-- Recorded arch-0005, arch-0006, stack-0007..0009, performance-0001, prog-0005.
+- All 16 `.agents/rules/*.md` declare scope frontmatter; index in `.agents/rules/README.md`.
+- New always-active rule `placing-product-code.md` maps uis/website, uis/backoffice, services/.
+- git-skill and memory-bank skills gained objective, inputs, output, acceptance criteria.
+- Recorded conv-0002 (updated), arch-0007, conv-0003, conv-0004, prog-0006..0008.
 
 ## Next steps
-Connect the application form to the centralized API, then select and implement
-the next TrackFlow domain milestone (telemetry/logging or warehouse restocking).
+1. Commit and push the rules/skills/memory-bank changes; open the PR to `main`.
+2. Build `uis/backoffice` (Vite + React + TS, internal layout, entry at `/`) and move
+   the utility tester there (prog-0007).
+3. Connect the application form to the centralized API.

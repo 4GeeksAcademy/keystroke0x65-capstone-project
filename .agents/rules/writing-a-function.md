@@ -1,3 +1,16 @@
+---
+description: One job per function, explicit inputs, early returns.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.py"
+---
+
 # Writing a function
 
 ## Rule

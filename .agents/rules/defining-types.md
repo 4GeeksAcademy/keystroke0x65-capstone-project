@@ -1,3 +1,12 @@
+---
+description: Strong TypeScript types at module boundaries.
+scope: file-pattern
+alwaysApply: false
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+---
+
 # Defining types
 
 ## Rule

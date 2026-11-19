@@ -1,3 +1,10 @@
+---
+description: Use when fixing a bug: root cause first, then a failing test.
+scope: agent-requested
+alwaysApply: false
+globs: []
+---
+
 # Fixing a bug
 
 ## Rule

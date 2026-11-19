@@ -19,7 +19,8 @@
 - [arch-0006] root h=0 x=0 d=2026-10-23 labels=website,scrolltrigger,lcp,intro :: The intro pin must use the existing #intro-spacer wrapper as pinSpacer, and other ScrollTriggers must read the pin's start/end instead of using #intro as trigger: moving or un-pinning the intro makes Chrome repaint it as new content and pushes Largest Contentful Paint late.
 
 ## Repository organization
-- [arch-0001] root h=1 x=0 d=2026-09-17 labels=monorepo,architecture,folders src="README.md" :: The repository is a monorepo organized by responsibility: uis for interfaces, services for the centralized API, data for pipelines, agents for AI, workflows for orchestration, and infra/scripts/internal for operations.
+- [arch-0001] root h=2 x=0 d=2026-09-17 labels=monorepo,architecture,folders src="README.md" :: The repository is a monorepo organized by responsibility: uis for interfaces, services for the centralized API, data for pipelines, agents for AI, workflows for orchestration, and infra/scripts/internal for operations.
+- [arch-0007] root h=0 x=0 d=2026-11-19 labels=backoffice,uis,internal,folders src="uis/README.md" :: uis/backoffice is reserved for the internal TrackFlow app: its own layout, separate from the public website, entry view at /, with its own package.json and README. It is not built yet; the folder holds only .gitkeep.
 
 ## Backend direction
 - [arch-0002] root h=0 x=0 d=2026-09-17 labels=fastapi,backend,api src="README.md" :: The documented backend direction is one centralized FastAPI company API with domain routers, adding separate workers only when background execution truly requires it.

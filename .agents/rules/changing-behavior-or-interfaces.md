@@ -1,3 +1,10 @@
+---
+description: Docs change in the same diff as behavior, setup, or interfaces.
+scope: always
+alwaysApply: true
+globs: []
+---
+
 # Changing behavior or interfaces
 
 ## Rule

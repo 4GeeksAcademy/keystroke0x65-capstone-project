@@ -2,14 +2,14 @@
   "version": 1,
   "counters": {
     "brief": 4,
-    "arch": 6,
+    "arch": 7,
     "stack": 9,
-    "conv": 2,
+    "conv": 4,
     "dec": 2,
-    "prog": 5,
+    "prog": 8,
     "performance": 1
   },
   "reminded_sessions": [],
   "created": "2026-09-17",
-  "batches": 3
+  "batches": 4
 }
